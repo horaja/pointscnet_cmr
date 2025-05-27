@@ -1,6 +1,6 @@
 import torch.nn as nn
 import torch.nn.functional as F
-from utils import PointNetSetAbstractionMsg, PointNetSetAbstraction
+from utils import PointNetSetAbstractionMsg, PointNetSetAbstraction, PointNetFeaturePropagation
 from z_order import *
 
 
@@ -155,13 +155,25 @@ class get_model(nn.Module):
 
         self.sa2 = PointNetSetAbstraction(None, None, None, 128 + 64 + 3 + 3, [256, 512, 1024], True)  # 含池化得到
 
-        self.fc1 = nn.Linear(1024, 512)
-        self.bn1 = nn.BatchNorm1d(512)
-        self.drop1 = nn.Dropout(0.4)
-        self.fc2 = nn.Linear(512, 256)
-        self.bn2 = nn.BatchNorm1d(256)
-        self.drop2 = nn.Dropout(0.5)
-        self.fc3 = nn.Linear(256, num_class)
+        self.fp1 = PointNetFeaturePropagation(195 + in_channel, mlp=[256, 128]) # 0 is norms
+
+        # For classification
+        # self.fc1 = nn.Linear(1024, 512)
+        # self.bn1 = nn.BatchNorm1d(512)
+        # self.drop1 = nn.Dropout(0.4)
+        # self.fc2 = nn.Linear(512, 256)
+        # self.bn2 = nn.BatchNorm1d(256)
+        # self.drop2 = nn.Dropout(0.5)
+        # self.fc3 = nn.Linear(256, num_class)
+
+        # For Segmentation - custom script
+        self.seg_head = nn.Sequential(
+            nn.Conv1d(128, 128, 1),
+            nn.BatchNorm1d(128),
+            nn.ReLU(inplace=True),
+            nn.Dropout(0.4),
+            nn.Conv1d(128, num_class, 1)
+        )
 
     def forward(self, xyz):
         B, _, _ = xyz.shape
@@ -176,19 +188,28 @@ class get_model(nn.Module):
         l1_points_att3 = self.attention3(l1_points)
         l1_points = l1_points * l1_points_att1.expand_as(l1_points) * l1_points_att3.expand_as(l1_points)
         l3_xyz, l3_points = self.sa2(l1_xyz, l1_points)
-        x = l3_points.view(B, 1024)
-        x = self.drop1(F.relu(self.bn1(self.fc1(x))))
-        x = self.drop2(F.relu(self.bn2(self.fc2(x))))
-        x = self.fc3(x)
-        x = F.log_softmax(x, -1)
-        return x, l3_points
+        
+        # Segmentation Head
+        propagated_features = self.fp1(xyz, l1_xyz, norm, l1_points)
+        seg_logits = self.seg_head(propagated_features)
+        return seg_logits, l3_points
+
+        # Classification Head
+        # x = l3_points.view(B, 1024)
+        # x = self.drop1(F.relu(self.bn1(self.fc1(x))))
+        # x = self.drop2(F.relu(self.bn2(self.fc2(x))))
+        # x = self.fc3(x)
+        # x = F.log_softmax(x, -1)
+        # return x, l3_points
 
 
 class get_loss(nn.Module):
     def __init__(self):
         super(get_loss, self).__init__()
+        self.loss_fn = nn.CrossEntropyLoss()
 
     def forward(self, pred, target, trans_feat):
-        total_loss = F.nll_loss(pred, target)
-
+        # total_loss = F.nll_loss(pred, target)
+        total_loss = self.loss_fn(pred, target.long())
+        
         return total_loss
