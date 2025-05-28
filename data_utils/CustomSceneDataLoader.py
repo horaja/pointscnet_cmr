@@ -42,11 +42,6 @@ class CustomSceneDataLoader(Dataset):
     # Otherwise, construct it from root and a base filename.
     if os.path.isfile(args.data_file_path): # Check if it's a full path to a file
       self.data_filepath = args.data_file_path
-    # else: # Assume args.data_file_path might be just a filename, and root is the directory
-		# 	# This fallback might be needed if train.py changes how it passes paths.
-		# 	# For your current train.py, args.data_file_path is full, so the 'if' branch is taken.
-		#   base_filename = 'my_custom_scenes_4096pts.npz' # Default if not a full path
-		# 	self.data_filepath = os.path.join(self.root, base_filename)
 
 
     if not os.path.exists(self.data_filepath):
@@ -121,10 +116,8 @@ class CustomSceneDataLoader(Dataset):
       else:
           print(f"No data to process for {self.split} split ({self.len} scenes).")
 
-      # Close the NPZ file handle only if it was successfully opened and data is processed
       if hasattr(self, 'all_scenes_data_npz') and self.all_scenes_data_npz.zip is not None:
           self.all_scenes_data_npz.close()
-          # print(f"NPZ file closed for {self.split} split after processing.")
     
     log_message_len = self.len if self.len > 0 else "0 (check split ratio and total scenes)"
     print(f'The size of {self.split} custom data is {log_message_len}')
@@ -143,9 +136,7 @@ class CustomSceneDataLoader(Dataset):
       label_np = self.list_of_labels[index]
     else:
       # This block runs if process_data is False.
-      # Ensure self.all_scenes_data_npz is accessible. It should remain open if process_data=False.
       if not hasattr(self, 'all_scenes_data_npz') or self.all_scenes_data_npz.zip is None :
-          # This state indicates an issue, as the npz file should be open if not processed.
            raise RuntimeError("NPZ file is closed or not loaded, but process_data is False. Initialize with process_data=True or manage NPZ file handle carefully.")
 
       scene_key = self.current_scene_keys[index]

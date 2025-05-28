@@ -1,0 +1,99 @@
+2025-05-26 17:25:24,192 - Model - INFO - PARAMETER ...
+2025-05-26 17:25:24,192 - Model - INFO - Namespace(batch_size=24, data_file_path='data/my_custom_scenes_4096pts.npz', decay_rate=0.0001, epoch=200, gpu='0', learning_rate=0.001, log_dir='job_2092844', model='SCNet', num_category=2, num_point=4096, optimizer='Adam', process_data=True, use_cpu=False, use_normals=False, use_uniform_sample=False)
+2025-05-26 17:25:24,192 - Model - INFO - Load dataset ...
+2025-05-26 17:25:44,030 - Model - INFO - No existing model, starting training from scratch...
+2025-05-26 17:25:44,030 - Model - INFO - Start training...
+2025-05-26 17:25:44,031 - Model - INFO - Epoch 1 (1/200):
+2025-05-26 17:26:15,596 - Model - INFO - Total loss: 30.325691
+2025-05-26 17:26:37,289 - Model - INFO - Test Overall Accuracy: 0.967392, Mean IoU: 0.904937
+2025-05-26 17:26:37,289 - Model - INFO - Best Overall Accuracy: 0.967392, Best Mean IoU: 0.904937
+2025-05-26 17:26:37,289 - Model - INFO - Save model...
+2025-05-26 17:26:37,289 - Model - INFO - Saving at log/classification/job_2092844/checkpoints/best_model.pth
+2025-05-26 17:26:37,360 - Model - INFO - Epoch 2 (2/200):
+2025-05-26 17:27:08,359 - Model - INFO - Total loss: 26.732108
+2025-05-26 17:27:30,712 - Model - INFO - Test Overall Accuracy: 0.965743, Mean IoU: 0.901755
+2025-05-26 17:27:30,713 - Model - INFO - Best Overall Accuracy: 0.967392, Best Mean IoU: 0.904937
+2025-05-26 17:27:30,714 - Model - INFO - Epoch 3 (3/200):
+2025-05-26 17:28:01,698 - Model - INFO - Total loss: 26.661900
+2025-05-26 17:28:23,226 - Model - INFO - Test Overall Accuracy: 0.960926, Mean IoU: 0.886452
+2025-05-26 17:28:23,226 - Model - INFO - Best Overall Accuracy: 0.967392, Best Mean IoU: 0.904937
+2025-05-26 17:28:23,227 - Model - INFO - Epoch 4 (4/200):
+2025-05-26 17:28:53,887 - Model - INFO - Total loss: 26.616042
+2025-05-26 17:29:15,437 - Model - INFO - Test Overall Accuracy: 0.972621, Mean IoU: 0.921871
+2025-05-26 17:29:15,438 - Model - INFO - Best Overall Accuracy: 0.972621, Best Mean IoU: 0.921871
+2025-05-26 17:29:15,438 - Model - INFO - Save model...
+2025-05-26 17:29:15,438 - Model - INFO - Saving at log/classification/job_2092844/checkpoints/best_model.pth
+2025-05-26 17:29:15,506 - Model - INFO - Epoch 5 (5/200):
+2025-05-26 17:29:46,604 - Model - INFO - Total loss: 26.943270
+2025-05-26 17:30:08,847 - Model - INFO - Test Overall Accuracy: 0.973266, Mean IoU: 0.923114
+2025-05-26 17:30:08,848 - Model - INFO - Best Overall Accuracy: 0.973266, Best Mean IoU: 0.923114
+2025-05-26 17:30:08,848 - Model - INFO - Save model...
+2025-05-26 17:30:08,848 - Model - INFO - Saving at log/classification/job_2092844/checkpoints/best_model.pth
+2025-05-26 17:30:08,919 - Model - INFO - Epoch 6 (6/200):
+2025-05-26 17:30:40,049 - Model - INFO - Total loss: 26.596155
+2025-05-26 17:31:01,981 - Model - INFO - Test Overall Accuracy: 0.959258, Mean IoU: 0.889565
+2025-05-26 17:31:01,982 - Model - INFO - Best Overall Accuracy: 0.973266, Best Mean IoU: 0.923114
+2025-05-26 17:31:01,982 - Model - INFO - Epoch 7 (7/200):
+2025-05-26 17:31:33,093 - Model - INFO - Total loss: 27.074819
+2025-05-26 17:31:54,437 - Model - INFO - Test Overall Accuracy: 0.969552, Mean IoU: 0.910836
+2025-05-26 17:31:54,438 - Model - INFO - Best Overall Accuracy: 0.973266, Best Mean IoU: 0.923114
+2025-05-26 17:31:54,438 - Model - INFO - Epoch 8 (8/200):
+2025-05-26 17:32:25,485 - Model - INFO - Total loss: 26.464195
+2025-05-26 17:32:47,360 - Model - INFO - Test Overall Accuracy: 0.971543, Mean IoU: 0.918637
+2025-05-26 17:32:47,360 - Model - INFO - Best Overall Accuracy: 0.973266, Best Mean IoU: 0.923114
+2025-05-26 17:32:47,360 - Model - INFO - Epoch 9 (9/200):
+2025-05-26 17:33:18,372 - Model - INFO - Total loss: 26.467751
+2025-05-26 17:33:40,336 - Model - INFO - Test Overall Accuracy: 0.961030, Mean IoU: 0.884423
+2025-05-26 17:33:40,337 - Model - INFO - Best Overall Accuracy: 0.973266, Best Mean IoU: 0.923114
+2025-05-26 17:33:40,337 - Model - INFO - Epoch 10 (10/200):
+2025-05-26 17:34:11,225 - Model - INFO - Total loss: 26.677789
+2025-05-26 17:34:32,877 - Model - INFO - Test Overall Accuracy: 0.971709, Mean IoU: 0.918253
+2025-05-26 17:34:32,878 - Model - INFO - Best Overall Accuracy: 0.973266, Best Mean IoU: 0.923114
+2025-05-26 17:34:32,878 - Model - INFO - Epoch 11 (11/200):
+2025-05-26 17:35:03,982 - Model - INFO - Total loss: 26.899091
+2025-05-26 17:35:26,226 - Model - INFO - Test Overall Accuracy: 0.974585, Mean IoU: 0.927230
+2025-05-26 17:35:26,227 - Model - INFO - Best Overall Accuracy: 0.974585, Best Mean IoU: 0.927230
+2025-05-26 17:35:26,227 - Model - INFO - Save model...
+2025-05-26 17:35:26,227 - Model - INFO - Saving at log/classification/job_2092844/checkpoints/best_model.pth
+2025-05-26 17:35:26,297 - Model - INFO - Epoch 12 (12/200):
+2025-05-26 17:35:57,439 - Model - INFO - Total loss: 26.693664
+2025-05-26 17:36:20,085 - Model - INFO - Test Overall Accuracy: 0.971263, Mean IoU: 0.915333
+2025-05-26 17:36:20,086 - Model - INFO - Best Overall Accuracy: 0.974585, Best Mean IoU: 0.927230
+2025-05-26 17:36:20,086 - Model - INFO - Epoch 13 (13/200):
+2025-05-26 17:36:51,317 - Model - INFO - Total loss: 26.308384
+2025-05-26 17:37:13,239 - Model - INFO - Test Overall Accuracy: 0.968403, Mean IoU: 0.906564
+2025-05-26 17:37:13,240 - Model - INFO - Best Overall Accuracy: 0.974585, Best Mean IoU: 0.927230
+2025-05-26 17:37:13,240 - Model - INFO - Epoch 14 (14/200):
+2025-05-26 17:37:44,456 - Model - INFO - Total loss: 26.815388
+2025-05-26 17:38:06,858 - Model - INFO - Test Overall Accuracy: 0.971632, Mean IoU: 0.916232
+2025-05-26 17:38:06,859 - Model - INFO - Best Overall Accuracy: 0.974585, Best Mean IoU: 0.927230
+2025-05-26 17:38:06,859 - Model - INFO - Epoch 15 (15/200):
+2025-05-26 17:38:37,897 - Model - INFO - Total loss: 26.439620
+2025-05-26 17:38:59,730 - Model - INFO - Test Overall Accuracy: 0.973468, Mean IoU: 0.922196
+2025-05-26 17:38:59,731 - Model - INFO - Best Overall Accuracy: 0.974585, Best Mean IoU: 0.927230
+2025-05-26 17:38:59,731 - Model - INFO - Epoch 16 (16/200):
+2025-05-26 17:39:30,803 - Model - INFO - Total loss: 26.236300
+2025-05-26 17:39:53,122 - Model - INFO - Test Overall Accuracy: 0.975220, Mean IoU: 0.927581
+2025-05-26 17:39:53,122 - Model - INFO - Best Overall Accuracy: 0.975220, Best Mean IoU: 0.927581
+2025-05-26 17:39:53,122 - Model - INFO - Save model...
+2025-05-26 17:39:53,122 - Model - INFO - Saving at log/classification/job_2092844/checkpoints/best_model.pth
+2025-05-26 17:39:53,202 - Model - INFO - Epoch 17 (17/200):
+2025-05-26 17:40:24,175 - Model - INFO - Total loss: 26.295118
+2025-05-26 17:40:45,716 - Model - INFO - Test Overall Accuracy: 0.972165, Mean IoU: 0.917909
+2025-05-26 17:40:45,717 - Model - INFO - Best Overall Accuracy: 0.975220, Best Mean IoU: 0.927581
+2025-05-26 17:40:45,717 - Model - INFO - Epoch 18 (18/200):
+2025-05-26 17:41:16,737 - Model - INFO - Total loss: 26.654439
+2025-05-26 17:41:38,841 - Model - INFO - Test Overall Accuracy: 0.975427, Mean IoU: 0.928901
+2025-05-26 17:41:38,842 - Model - INFO - Best Overall Accuracy: 0.975427, Best Mean IoU: 0.928901
+2025-05-26 17:41:38,842 - Model - INFO - Save model...
+2025-05-26 17:41:38,842 - Model - INFO - Saving at log/classification/job_2092844/checkpoints/best_model.pth
+2025-05-26 17:41:38,930 - Model - INFO - Epoch 19 (19/200):
+2025-05-26 17:42:10,164 - Model - INFO - Total loss: 26.736891
+2025-05-26 17:42:32,034 - Model - INFO - Test Overall Accuracy: 0.971024, Mean IoU: 0.917614
+2025-05-26 17:42:32,035 - Model - INFO - Best Overall Accuracy: 0.975427, Best Mean IoU: 0.928901
+2025-05-26 17:42:32,035 - Model - INFO - Epoch 20 (20/200):
+2025-05-26 17:43:03,079 - Model - INFO - Total loss: 26.212145
+2025-05-26 17:43:25,190 - Model - INFO - Test Overall Accuracy: 0.973230, Mean IoU: 0.921916
+2025-05-26 17:43:25,191 - Model - INFO - Best Overall Accuracy: 0.975427, Best Mean IoU: 0.928901
+2025-05-26 17:43:25,191 - Model - INFO - Epoch 21 (21/200):
+2025-05-26 17:43:56,120 - Model - INFO - Total loss: 26.420720

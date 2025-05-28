@@ -13,6 +13,8 @@ import logging
 from tqdm import tqdm
 import sys
 import importlib
+import matplotlib.pyplot as plt
+from mpl_toolkits.mplot3d import Axes3D
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 ROOT_DIR = BASE_DIR
@@ -31,10 +33,41 @@ def parse_args():
     parser.add_argument('--use_uniform_sample', action='store_true', default=False, help='use uniform sampiling')
     parser.add_argument('--num_votes', type=int, default=3, help='Aggregate classification scores with voting')
     parser.add_argument('--data_file_path', type=str, required=True, help='Path to your custom .npz data file')
+    parser.add_argument('--visualize', action='store_true', default=False, help='visualize first scene in first batch')
     return parser.parse_args()
 
+def visualize_scene(scene_data, scene_labels=None, title="Point Cloud Scene", save_path=None):
+    fig = plt.figure(figsize=(10, 7))
+    ax = fig.add_subplot(111, projection='3d')
 
-def test(model, loader, num_class=2, vote_num=1):
+    if scene_labels is not None:
+        cmap = plt.get_cmap('viridis', 2)
+        # For older matplotlib, get_cmap might still be okay, but this is the modern way:
+        # cmap = mpl.colormaps['viridis'].resampled(2)
+        
+        scatter = ax.scatter(scene_data[:, 0], scene_data[:, 1], scene_data[:, 2], 
+                                                    c=scene_labels.astype(float), # Cast to float if labels are ints, sometimes helps cmap
+                                                    cmap=cmap, s=5)
+        cbar = fig.colorbar(scatter, ax=ax, ticks=[0.25, 0.75])
+        cbar.set_ticklabels(['Ground (0)', 'Cone (1)'])
+    else:
+        # Original visualization for height coloring
+        scatter = ax.scatter(scene_data[:, 0], scene_data[:, 1], scene_data[:, 2], c=scene_data[:, 2], cmap='plasma', s=1)
+
+    ax.set_xlim(0, 1)
+    ax.set_ylim(0, 1)
+    ax.set_zlim(0, 0.4)
+    ax.set_title(title)
+    ax.set_xlabel("X (m)")
+    ax.set_ylabel("Y (m)")
+    ax.set_zlabel("Z (m)")
+    ax.view_init(elev=30, azim=45)
+    plt.savefig(save_path)
+    print(f"Visualization saved to {save_path}")
+    plt.close(fig)
+
+
+def test(model, loader, num_class=2, vote_num=1, experiment_dir=None, visualize=False):
     # mean_correct = []
     classifier = model.eval()
     # class_acc = np.zeros((num_class, 3))
@@ -47,12 +80,14 @@ def test(model, loader, num_class=2, vote_num=1):
     total_intersection = np.zeros(num_class)
     total_union = np.zeros(num_class)
 
+    visualized_once = False
+
     for j, (points, target) in tqdm(enumerate(loader), total=len(loader)):
         if not args.use_cpu:
-            points, target = points.cuda(), target.cuda()
+            points_vis, target = points.cuda(), target.cuda()
 
         # input()
-        points = points.transpose(2, 1)
+        points = points_vis.transpose(2, 1)
         # vote_pool = torch.zeros(target.size()[0], num_class).cuda()
         first_pred_example = None
         
@@ -65,6 +100,25 @@ def test(model, loader, num_class=2, vote_num=1):
         pred = vote_pool / vote_num
 
         pred_choice = pred.data.max(1)[1]
+
+        if not visualized_once and j == 0 and visualize:
+            points_single_np = points_vis[0].cpu().numpy()
+            target_single_np = target[0].cpu().numpy()
+            pred_choice_single_np = pred_choice[0].cpu().numpy()
+
+            vis_dir = os.path.join(experiment_dir, 'visualizations')
+            os.makedirs(vis_dir, exist_ok=True)
+
+            visualize_scene(points_single_np, target_single_np,
+                            title='Ground Truth Labels (First Scene)',
+                            save_path=os.path.join(vis_dir, "ground_truth_visualization.png"))
+            visualize_scene(points_single_np, pred_choice_single_np,
+                            title='Prediction Labels (First Scene)',
+                            save_path=os.path.join(vis_dir, "pred_visualization.png"))
+            visualized_once = True
+
+
+        # All classification stuff below
         # print(pred_choice)
         # print("pred_choice.shape", pred_choice.shape)
         # for cat in np.unique(target.cpu()):
@@ -74,6 +128,8 @@ def test(model, loader, num_class=2, vote_num=1):
         #     # print("classacc.shape", classacc.shape)
         #     class_acc[cat, 0] += classacc.item() / float(points[target == cat].size()[0])
         #     class_acc[cat, 1] += 1
+
+        
 
         correct_points = pred_choice.eq(target.long().data).cpu().sum().item()
         total_correct_points += correct_points
@@ -184,10 +240,11 @@ def main(args):
 
     with torch.no_grad():
         overall_accuracy, mean_iou, per_class_iou = test(classifier.eval(), testDataLoader, vote_num=args.num_votes,
-                                                       num_class=num_class)
+                                                       num_class=num_class, experiment_dir=experiment_dir, visualize=args.visualize)
         log_string('Test Overall Accuracy: %f, Mean IoU: %f' % (overall_accuracy, mean_iou))
         for i in range(num_class):
             log_string('Class %s IoU: %f' % (cls_to_tag[i], per_class_iou[i]))
+        log_string(f"Visualizations (if generated) are saved in: {os.path.join(experiment_dir, 'visualizations')}")
 
 if __name__ == '__main__':
     args = parse_args()

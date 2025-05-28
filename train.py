@@ -212,6 +212,7 @@ def main(args):
     shutil.copy('models/SCNet.py', str(exp_dir))
     shutil.copy('models/z_order.py', str(exp_dir))
 
+    # change to name:model
     classifier = model.get_model(num_class, normal_channel=args.use_normals)
     criterion = model.get_loss()
     classifier.apply(inplace_relu)
