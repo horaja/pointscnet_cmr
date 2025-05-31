@@ -3,7 +3,7 @@ Author: Benny
 Date: Nov 2019
 """
 # from data_utils.ModelNetDataLoader import ModelNetDataLoader
-from data_utils.CustomSceneDataLoader import CustomSceneDataLoader
+from data_utils.StanStanDataLoader import CreateDataLoaders
 import argparse
 import numpy as np
 import os
@@ -27,12 +27,12 @@ def parse_args():
     parser.add_argument('--gpu', type=str, default='0', help='specify gpu device')
     parser.add_argument('--batch_size', type=int, default=24, help='batch size in training')
     parser.add_argument('--num_category', default=2, type=int, choices=[2], help='training on custom data set')
-    parser.add_argument('--num_point', type=int, default=4096, help='Point Number')
+    parser.add_argument('--num_points', type=int, default=4096, help='Point Number')
     parser.add_argument('--log_dir', type=str, required=True, help='Experiment root')
     parser.add_argument('--use_normals', action='store_true', default=False, help='use normals')
     parser.add_argument('--use_uniform_sample', action='store_true', default=False, help='use uniform sampiling')
     parser.add_argument('--num_votes', type=int, default=3, help='Aggregate classification scores with voting')
-    parser.add_argument('--data_file_path', type=str, required=True, help='Path to your custom .npz data file')
+    parser.add_argument('--data_root_dir', type=str, required=True, help='Path to your custom .npz data root')
     parser.add_argument('--visualize', action='store_true', default=False, help='visualize first scene in first batch')
     return parser.parse_args()
 
@@ -54,9 +54,9 @@ def visualize_scene(scene_data, scene_labels=None, title="Point Cloud Scene", sa
         # Original visualization for height coloring
         scatter = ax.scatter(scene_data[:, 0], scene_data[:, 1], scene_data[:, 2], c=scene_data[:, 2], cmap='plasma', s=1)
 
-    ax.set_xlim(0, 1)
-    ax.set_ylim(0, 1)
-    ax.set_zlim(0, 0.4)
+    ax.set_xlim(scene_data[:, 0].min(), scene_data[:, 0].max())
+    ax.set_ylim(scene_data[:, 1].min(), scene_data[:, 1].max())
+    ax.set_zlim(scene_data[:, 2].min(), scene_data[:, 2].max())
     ax.set_title(title)
     ax.set_xlabel("X (m)")
     ax.set_ylabel("Y (m)")
@@ -193,24 +193,12 @@ def main(args):
 
     '''DATA LOADING'''
     log_string('Load dataset ...')
-    # data_path = 'data/modelnet40_normal_resampled/'
-    data_root_dir = os.path.dirname(args.data_file_path)
-    if not data_root_dir:
-        data_root_dir = './'
 
-    SEED_FOR_SPLIT = 42
-
-    test_dataset = CustomSceneDataLoader(
-        root=data_root_dir, 
-        args=args, 
-        split='test', 
-        process_data=False,
-        train_split_ratio=0.8,
-        random_seed=SEED_FOR_SPLIT
+    _, testDataLoader = CreateDataLoaders(
+        root_dir=args.data_root_dir,
+        args=args,
+        train_split_ratio = 0.7
     )
-
-    testDataLoader = torch.utils.data.DataLoader(test_dataset, batch_size=args.batch_size, shuffle=False,
-                                                 num_workers=0)
 
     '''MODEL LOADING'''
     num_class = args.num_category
@@ -219,6 +207,15 @@ def main(args):
     model = importlib.import_module(model_name)
 
     classifier = model.get_model(num_class, normal_channel=args.use_normals)
+
+    print(f"PyTorch version: {torch.__version__}")
+    print(f"CUDA available: {torch.cuda.is_available()}")
+    if torch.cuda.is_available():
+        print(f"Number of GPUs: {torch.cuda.device_count()}")
+        print(f"Current CUDA device: {torch.cuda.current_device()}")
+        print(f"Device name: {torch.cuda.get_device_name(torch.cuda.current_device())}")
+    else:
+        print("CUDA is NOT available.")
 
     # for name, parameters in classifier.named_parameters():
     #     print(name, ':', parameters)

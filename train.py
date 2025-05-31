@@ -17,7 +17,8 @@ import argparse
 
 from pathlib import Path
 from tqdm import tqdm
-from data_utils.CustomSceneDataLoader import CustomSceneDataLoader
+from data_utils.StanStanDataLoader import CreateDataLoaders
+# from data_utils.CustomSceneDataLoader import CustomSceneDataLoader
 # from data_utils.ModelNetDataLoader import ModelNetDataLoader
 from torch.utils.tensorboard import SummaryWriter
 import torch.nn.functional as F
@@ -44,14 +45,14 @@ def parse_args():
     parser.add_argument('--num_category', default=2, type=int, choices=[2], help='training on custom data set')
     parser.add_argument('--epoch', default=200, type=int, help='number of epoch in training')
     parser.add_argument('--learning_rate', default=0.001, type=float, help='learning rate in training')
-    parser.add_argument('--num_point', type=int, default=4096, help='Point Number')
+    parser.add_argument('--num_points', type=int, default=4096, help='Point Number')
     parser.add_argument('--optimizer', type=str, default='Adam', help='optimizer for training')
     parser.add_argument('--log_dir', type=str, default=None, help='experiment root')
     parser.add_argument('--decay_rate', type=float, default=1e-4, help='decay rate')
     parser.add_argument('--use_normals', action='store_true', default=False, help='use normals')
     parser.add_argument('--process_data', action='store_true', default=False, help='save data offline')
     parser.add_argument('--use_uniform_sample', action='store_true', default=False, help='use uniform sampiling')
-    parser.add_argument('--data_file_path', type=str, required=True, help='Path to your custom .npz data file')
+    parser.add_argument('--data_root_dir', type=str, required=True, help='Path to your custom .npz data file')
     return parser.parse_args()
 
 
@@ -129,6 +130,7 @@ def test(model, loader, num_class=2):
 
 
 def main(args):
+    print('in main - printing check')
     def log_string(str):
         logger.info(str)
         print(str)
@@ -137,6 +139,7 @@ def main(args):
     os.environ["CUDA_VISIBLE_DEVICES"] = args.gpu
 
     '''CREATE DIR'''
+    print('creating directory lowk')
     timestr = str(datetime.datetime.now().strftime('%Y-%m-%d_%H-%M'))
     exp_dir = Path('./log/')
     exp_dir.mkdir(exist_ok=True)
@@ -157,6 +160,7 @@ def main(args):
     writer = SummaryWriter(writer_dir)
 
     '''LOG'''
+    print('creating log stuffz')
     args = parse_args()
     logger = logging.getLogger("Model")
     logger.setLevel(logging.INFO)
@@ -170,37 +174,15 @@ def main(args):
 
     '''DATA LOADING'''
     log_string('Load dataset ...')
-    # data_path = 'data/modelnet40_normal_resampled/'
-    data_root_dir = os.path.dirname(args.data_file_path)
-    if not data_root_dir:
-        data_root_dir = './'
-    
-    SEED_FOR_SPLIT = 42
-    
-    train_dataset = CustomSceneDataLoader(
-        root=data_root_dir, 
-        args=args, 
-        split='train', 
-        process_data=args.process_data,
-        train_split_ratio=0.8,
-        random_seed=SEED_FOR_SPLIT
-    )
+    print('data loading now')
 
-    test_dataset = CustomSceneDataLoader(
-        root=data_root_dir, 
-        args=args, 
-        split='test', 
-        process_data=args.process_data,
-        train_split_ratio=0.8,
-        random_seed=SEED_FOR_SPLIT
+    trainDataLoader, testDataLoader = CreateDataLoaders(
+        root_dir=args.data_root_dir,
+        args=args,
+        train_split_ratio = 0.7
     )
-
-    # train_dataset = ModelNetDataLoader(root=data_path, args=args, split='train', process_data=args.process_data)
-    # test_dataset = ModelNetDataLoader(root=data_path, args=args, split='test', process_data=args.process_data)
-    trainDataLoader = torch.utils.data.DataLoader(train_dataset, batch_size=args.batch_size, shuffle=True,
-                                                  num_workers=4, drop_last=True)
-    testDataLoader = torch.utils.data.DataLoader(test_dataset, batch_size=args.batch_size, shuffle=False,
-                                                 num_workers=4)
+    
+    print('data has been loaded')
 
     '''MODEL LOADING'''
     num_class = args.num_category
@@ -325,5 +307,6 @@ def main(args):
 
 
 if __name__ == '__main__':
+    print("--- train.py __main__ block ENTERED ---", flush=True)
     args = parse_args()
     main(args)
